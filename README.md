@@ -7,15 +7,15 @@ The dashboard provides insights into **sales trends, product performance, and cu
 ---
 
 ## Tech Stack
-- Database:PostgreSQL  
-- Visualization Tool: Microsoft Excel
-- Data Cleaning : Power Query Editor
+- Database: PostgreSQL
+- Data Cleaning: Power Query Editor  
+- Visualization Tool: Microsoft Excel  
 - Data Connection: Excel Power Query (connected to PostgreSQL)  
-- Languages/Queries:SQL (PostgreSQL dialect)
+- Languages/Queries: SQL (PostgreSQL dialect)
 
 ---
 
-##  Database Schema
+## Database Schema
 
 ### Table: `pizza_sales`
 ```sql
@@ -34,108 +34,102 @@ CREATE TABLE pizza_sales
     pizza_ingredients VARCHAR(100),
     pizza_name VARCHAR(50)
 );
-Key Performance Indicators (KPIs)
-KPI	Description	SQL Query
-Total Revenue	Total revenue generated from all pizza sales	SELECT SUM(total_price) FROM pizza_sales;
-Average Order Value	Average sales value per order	SELECT SUM(total_price) / COUNT(DISTINCT(order_id)) FROM pizza_sales;
-Total Pizzas Sold	Total quantity of pizzas sold	SELECT SUM(quantity) FROM pizza_sales;
-Total Orders	Total number of unique orders	SELECT COUNT(DISTINCT(order_id)) FROM pizza_sales;
-Average Pizzas Per Order	Average number of pizzas per order	SELECT ROUND(SUM(quantity)*1.0/COUNT(DISTINCT(order_id)),2) FROM pizza_sales;
 
-Trend Analysis
-Daily Trend for Total Orders
-sql
-Copy code
+
+KPI REQUIREMENTS 
+
+--1. Total Revenue:--
+
 SELECT 
-  TO_CHAR(order_date, 'Day') AS day,
-  COUNT(DISTINCT(order_id)) AS total_orders
-FROM pizza_sales
-GROUP BY day
-ORDER BY total_orders DESC;
-Hourly Trend for Orders
-sql
-Copy code
+SUM(total_price) AS Total_Revenue
+FROM PIZZA_SALES 
+
+--2. Average Order Value:--
+
 SELECT 
-  EXTRACT(HOUR FROM order_time) AS hour,
-  COUNT(DISTINCT(order_id)) AS total_orders
-FROM pizza_sales
-GROUP BY hour
-ORDER BY total_orders ASC;
-Category and Size Insights
-% of Sales by Pizza Category
-sql
-Copy code
+SUM(total_price) / COUNT(DISTINCT(order_id)) as Avg_order_value
+FROM PIZZA_SALES 
+
+--3. Total Pizzas Sold:--
+
+SELECT 
+SUM(quantity) AS Total_Pizzas_Sold
+FROM PIZZA_SALES 
+
+--4. Total Orders: --
+
+SELECT 
+COUNT(DISTINCT(order_id)) AS Total_Orders
+FROM PIZZA_SALES 
+
+--5.Average Pizzas Per Order:--
+
+SELECT 
+ROUND(SUM(quantity) *1.0 / COUNT(DISTINCT(order_id)),2)
+FROM PIZZA_SALES 
+
+--6.Daily Trend for Total Orders--
+
+SELECT 
+TO_CHAR(order_date,'Day ') AS Day,
+COUNT(DISTINCT(order_id)) AS Total_orders
+FROM PIZZA_SALES 
+GROUP BY Day
+ORDER BY Total_orders DESC
+
+--7.Hourly Trend for Orders -- 
+
+SELECT 
+EXTRACT(HOUR FROM order_time) AS Hourly,
+COUNT(DISTINCT(order_id)) AS Total_orders
+FROM PIZZA_SALES
+GROUP BY Hourly
+ORDER BY Total_orders ASC
+
+--8. % of Sales by Pizza Category--
+
 SELECT 
   pizza_category,
   ROUND(SUM(total_price), 2) AS total_revenue,
   ROUND(SUM(total_price) * 100.0 / (SELECT SUM(total_price) FROM pizza_sales), 2) AS pct
 FROM pizza_sales
-GROUP BY pizza_category;
-% of Sales by Pizza Size
-sql
-Copy code
+GROUP BY pizza_category
+
+--9. % of Sales by Pizza Size --
+
 SELECT 
-  pizza_size,
-  ROUND(SUM(total_price), 2) AS total_revenue,
-  ROUND(SUM(total_price) * 100.0 / (SELECT SUM(total_price) FROM pizza_sales), 2) AS pct
+	pizza_size,
+	ROUND(SUM(total_price),2) AS  total_revenue,
+	ROUND(SUM(total_price) * 100.0 / (SELECT SUM(total_price) FROM pizza_sales), 2) AS pct
 FROM pizza_sales
-GROUP BY pizza_size;
-Best & Worst Performers
-Top 5 Best Sellers
-sql
-Copy code
+GROUP BY pizza_size
+
+--10.Total Pizzas Sold by Pizza Category--
+
 SELECT 
-  pizza_name,
-  SUM(quantity) AS total_sold
+pizza_category,
+SUM(quantity) AS Total_pizzas_Sold
 FROM pizza_sales
-GROUP BY pizza_name
-ORDER BY total_sold DESC
-LIMIT 5;
-Bottom 5 Sellers
-sql
-Copy code
+GROUP BY pizza_category
+
+--11.Top 5 Best Sellers by Total Pizzas Sold--
+
 SELECT 
-  pizza_name,
-  SUM(quantity) AS total_sold
+pizza_name,
+SUM(quantity) AS Total_Sold
 FROM pizza_sales
 GROUP BY pizza_name
-ORDER BY total_sold ASC
-LIMIT 5;
-Dashboard Insights (Excel Visualization)
-🔹 Busiest Days & Times
-Peak sales occur on Friday and Saturday evenings.
+ORDER BY Total_Sold DESC LIMIT 5
 
-Most orders are placed between 12 PM to 1 PM.
 
-🔹 Sales by Category & Size
-Classic category and Large size pizzas contribute the most to total revenue.
+--12.Bottom 5 Best Sellers by Total Pizzas Sold--
 
-🔹 Best Sellers
-Classic Deluxe and Chicken pizzas are the top performers.
+SELECT 
+pizza_name,
+SUM(quantity) AS Total_Sold
+FROM pizza_sales
+GROUP BY pizza_name
+ORDER BY Total_Sold ASC LIMIT 5
 
-🔹 Worst Seller
-Brie Carre Pizza has the lowest sales and revenue.
 
-Dashboard Preview
 
-How to Use
-Import the dataset into PostgreSQL.
-
-Run the provided SQL queries to verify the KPIs.
-
-Connect Excel to PostgreSQL using Power Query or ODBC Connection.
-
-Load the query results and create Pivot Tables and Charts.
-
-Use Excel Slicers for month-wise or category-based filtering.
-
-Learnings & Skills Demonstrated
-SQL for data extraction and analytics
-
-Excel Power Query and Power Pivot
-
-KPI dashboard creation
-
-Data modeling and aggregation
-
-Business insights and data storytelling
