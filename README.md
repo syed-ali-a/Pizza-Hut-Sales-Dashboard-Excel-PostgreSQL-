@@ -1,4 +1,4 @@
-# Pizza Hut Sales Dashboard (Excel + PostgreSQL)
+# Pizza Hutt Sales Dashboard (Excel + PostgreSQL)
 
 ## Project Overview
 This project analyzes **Pizza Hut’s sales performance** using data stored in **PostgreSQL** and visualized in **Microsoft Excel**.  
